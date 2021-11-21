@@ -50,7 +50,7 @@
    // Instruction memory logic:
    `READONLY_MEM($pc, $$instr[31:0])
 
-   // Decoding the IMem instruction in the decoder:
+   // Decoding the IMem instruction in the decoder (Instruction Type):
    $is_j_instr = $instr[6:2] == 5'b11011;
    $is_b_instr = $instr[6:2] == 5'b11000;
    $is_r_instr = $instr[6:2] == 5'b01011 ||$instr[6:2] == 5'b01100 ||$instr[6:2] == 5'b10100 ||$instr[6:2] == 5'b01110;
@@ -59,13 +59,25 @@
    $is_s_instr = $instr[6:2] == 5'b01000||$instr[6:2] == 5'b01001;
    
    
-     
-
+   // Decoding the instruction fields
+   $opcode[6:0] = $instr[6:0]; 
+   $rd[4:0] = $instr[11:7];
+   $funct3[2:0] = $instr[14:12];
+   $rs1[4:0] = $instr[19:15];
+   $rs2[4:0] = $instr[24:20];
+   
+   // Setting instruction fields valid depending on instruction type
+   $rs2_valid = $is_r_instr || $is_s_instr || $is_b_instr; 
+   $rs1_valid = $is_r_instr || $is_i_instr || $is_b_instr|| $is_s_instr; 
+   $funct3_valid = $is_r_instr || $is_i_instr || $is_b_instr|| $is_s_instr; 
+   $rd_valid = $is_r_instr || $is_i_instr || $is_u_instr|| $is_j_instr; 
+   $imm_valid = $is_j_instr || $is_u_instr || $is_b_instr|| $is_s_instr || $is_i_instr;
    
    
    // Assert these to end simulation (before Makerchip cycle limit).
    *passed = 1'b0;
    *failed = *cyc_cnt > M4_MAX_CYC;
+   
    
    //m4+rf(32, 32, $reset, $wr_en, $wr_index[4:0], $wr_data[31:0], $rd1_en, $rd1_index[4:0], $rd1_data, $rd2_en, $rd2_index[4:0], $rd2_data)
    //m4+dmem(32, 32, $reset, $addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data)
