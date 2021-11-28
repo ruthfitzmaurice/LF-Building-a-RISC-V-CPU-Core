@@ -126,8 +126,30 @@
    *passed = 1'b0;
    *failed = *cyc_cnt > M4_MAX_CYC;
    
+   // Register File Read implemented. 
+   // Here we are using a macro to instantiate a 32 entry, 32 bit wide register file array. 
+   // The fields of the macro are explained below: 
    
-   //m4+rf(32, 32, $reset, $wr_en, $wr_index[4:0], $wr_data[31:0], $rd1_en, $rd1_index[4:0], $rd1_data, $rd2_en, $rd2_index[4:0], $rd2_data)
+   // 1.) 32 entry
+   // 2.) 32 bit wide register file
+   // 3.) Reset signal
+   // 4.) Write enable
+   // 5.) Write index
+   //  6.) Write data
+   // 7.) Read 1 enable
+   // 8.) Read 1 index
+   // 9.) Read 1 data
+   // 10.) Read 2 enable
+   // 11.) Read 2 index
+   // 12.) Read 2 data
+   
+   // The fields of the macro have been populated using the correct signals from the instruction decode
+   // logic written above.
+
+  m4+rf(32, 32, $reset, $rd != 5'b00000 ? $rd_valid : 1'b0, $rd, $wr_data[31:0], $rs1_valid, $rs1, $src1_value , $rs2_valid, $rs2, $src2_value )
+
+   
+   
    //m4+dmem(32, 32, $reset, $addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data)
    m4+cpu_viz()
 \SV
